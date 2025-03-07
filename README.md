@@ -6,11 +6,14 @@ Rudimentary Features:
 - Villager birthdays and festivals are provided for convenience.
 
 Planned(?) Features:
+- Responsiveness for mobile/smaller screens
+- Clear events by year, day, and season
 - Add repeatable events (daily events, crop regrows, etc.)
 - Customize and classify events (crops, machines, quests, etc.)
-- Import/Export calendar via JSON file in case localStorage is cleared.
+- Import/Export calendar via JSON file in case localStorage is cleared
 
 Live at [https://melzarjanchico.github.io/stardew-calendar-planner](https://melzarjanchico.github.io/stardew-calendar-planner/).
 
 Images/Icons are not mine and were fetched from Stardew Valley Wikia.
+
 Stardew Valley (v1.6). © ConcernedApe. 

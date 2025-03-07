@@ -268,7 +268,7 @@ const Calendar = () => {
                             ConcernedApe
                         </a>
                         {". Made with ❤️ by "}
-                        <a href="https://https://github.com/melzarjanchico" target="_blank" rel="noopener noreferrer" className="hover:underline">
+                        <a href="https://github.com/melzarjanchico" target="_blank" rel="noopener noreferrer" className="hover:underline">
                             melzarjanchico
                         </a>
                         .
