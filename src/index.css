@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Work Sans", "sans-serif";
+
+  --color-primary: #DDD1B2;
+  --color-primary-light: #FBEBC2;
+  --color-secondary: #5E360C;
+}
+
+:root {
+
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  background: url("https://stardewvalley.net/wp-content/uploads/2017/12/stardewbackground.png") no-repeat fixed center center / cover;
+}
+
+input, textarea, select {
+  outline: none;
+}
