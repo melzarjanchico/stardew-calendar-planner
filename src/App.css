@@ -1,4 +1,24 @@
 #root {
   margin: 0 auto;
-  padding: 2rem;
+}
+
+.header-border-image {
+  border: 6px solid transparent;
+  border-image: url(https://forums.stardewvalley.net/styles/classic/scrollborder.png) 24 fill repeat;
+  border-image-width: 24px;
+}
+
+.calendar-border-image {
+  border: 12px solid transparent;
+  border-image: url(https://forums.stardewvalley.net/styles/classic/woodenboxborder.png) 12% stretch;
+}
+
+.modal-border-image {
+  border: 15px solid transparent;
+  border-top-right-radius: 15px;
+  border-top-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  border-bottom-left-radius: 15px;
+  border-image: url(https://stardewvalley.net/wp-content/uploads/2017/12/menu_border_noshadowtopleft.png) 33 stretch;
+  border-image-slice: 33%;
 }

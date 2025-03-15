@@ -95,9 +95,9 @@ export const events = {
             {day: 8, name: "Festival of Ice", type: "town"},
             {day: 12, name: "SquidFest", type: "fishing"},
             {day: 13, name: "SquidFest", type: "fishing"},
+            {day: 15, name: "Night Market", type: "nontown"},
+            {day: 16, name: "Night Market", type: "nontown"},
             {day: 17, name: "Night Market", type: "nontown"},
-            {day: 18, name: "Night Market", type: "nontown"},
-            {day: 19, name: "Night Market", type: "nontown"},
             {day: 25, name: "Feast of the Winter Star", type: "town"},
         ]
     }

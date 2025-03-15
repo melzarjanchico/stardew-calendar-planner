@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { daysOfTheWeek, events, festivalIcons, seasonWithIcons, villagerIcons } from "../utils/constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendarAlt, faCaretDown, faCaretUp, faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faCalendarAlt, faCaretLeft, faCaretRight, faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import NewEventModal from "./modals/NewEvent";
 import { capitalizeString, dayCheck, filterEventsByDay } from "../utils/functions";
 import { CalendarBirthday, CalendarData, CalendarFestival, Season } from "../utils/types";
@@ -53,6 +53,27 @@ const Calendar = () => {
         setSeason(newSeason);
     }
 
+    const addEvent = (e: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, day: number) => {
+        if (e) e.stopPropagation();
+        setDay(day);
+        setNewEventModal(true);
+    }
+
+    const viewEvent = (day: number) => {
+        setDay(day);
+        setViewEventModal(true);
+    }
+
+    const deleteEvent = (e: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, id: string | null) => {
+        if (!id) return;
+        if (e) e.stopPropagation();
+        setSeasonEvents((prevEvents) => {
+            const updatedEvents = prevEvents.filter((event) => event.id !== id);
+            localStorage.setItem("calendar_data", JSON.stringify(updatedEvents));
+            return updatedEvents;
+        });
+    };
+
     const handleDayEvents = (day: number) => {
         const dayEvents = [];
 
@@ -97,169 +118,223 @@ const Calendar = () => {
                     if (events.type === "birthday") {
                         const villagerIcon = villagerIcons(events.name);
                         return (
-                            <div key={events.name} className="p-0.5 rounded flex flex-row items-center">
+                            <div key={events.name} className="p-0.5 rounded flex flex-row items-center hover:bg-zinc-500/10" title={`${events.name}'s Birthday`}>
                                 <div className="basis-1/5 pe-1">
                                     <img 
                                         src={villagerIcon ? villagerIcon.icon : ""}
                                         className="max-w-5"
                                     />
                                 </div>
-                                <span className="basis-4/5 overflow-hidden truncate w-full block">{events.name}'s Birthday</span>
+                                <div className="basis-4/5 flex flex-row items-center justify-between w-full min-w-0">
+                                    <div className="truncate w-full">
+                                    {events.name}'s Birthday
+                                    </div>
+                                </div>
                             </div>
                         )
                     } else if (events.type.includes("festival")) {
                         return (
-                            <div key={events.name} className="p-0.5 rounded flex flex-row items-center">
+                            <div key={events.name} className="p-0.5 rounded flex flex-row items-center hover:bg-zinc-500/10" title={events.name}>
                                 <div className="basis-1/5 pe-1">
                                     <img 
                                         src={festivalIcons(events.type)}
                                         className="max-w-5"
                                     />
                                 </div>
-                                <div className="basis-4/5 overflow-hidden truncate w-full block">{events.name}</div>
+                                <div className="basis-4/5 flex flex-row items-center justify-between w-full min-w-0">
+                                    <div className="truncate w-full">
+                                        {events.name}
+                                    </div>
+                                </div>
                             </div>
                         )
                     } else {
                         return (
-                            <div key={`${events.id}-${events.name}`} className="p-0.5 rounded flex flex-row items-center hover:bg-zinc-500/10 group/event">
-
+                            <div key={`${events.id}-${events.name}`} className="p-0.5 rounded flex flex-row items-center hover:bg-zinc-500/10 group/event" title={events.name}>
                                 <div className="basis-1/5 pe-1">
                                     <div className="w-[20px]">
                                         <FontAwesomeIcon icon={faCalendarAlt} className="w-[20px] h-[20px]"/>
                                     </div>
                                 </div>
-
-                                {/* Unhovered view */}
-                                <span className="basis-4/5 overflow-hidden truncate w-full block group-hover/event:hidden">
-                                    {events.name}
-                                </span>
-
-                                {/* Hovered View */}
-                                <div className="basis-4/5 hidden group-hover/event:grid grid-cols-4 items-center justify-between">
-                                    <span className="col-span-3 overflow-hidden text-ellipsis whitespace-nowrap">{events.name}</span>
+                                <div className="basis-4/5 group-hover/event:basis-3/5 flex flex-row items-center justify-between w-full min-w-0">
+                                    <div className="truncate w-full">
+                                        {events.name}
+                                    </div>
+                                </div>
+                                <div className="hidden group-hover/event:block basis-1/5 ps-px">
                                     <button 
                                         onClick={(e) => deleteEvent(e, events.id)}
-                                        className="col-span-1 ml-2 text-zinc-500 hover:text-red-500 cursor-pointer"
+                                        className="ml-2 text-zinc-500 hover:text-red-500 cursor-pointer"
                                     >
                                         <FontAwesomeIcon icon={faTimes} className="w-[16px] h-[16px]" />
                                     </button>
                                 </div>
-
                             </div>
                         )
                     }
                 })}
                 {/* Show +X more if there are more than 5 events */}
                 {handleDayEvents(day + 1).length > 4 && (
-                    <div className="text-xs text-gray-500">+{handleDayEvents(day + 1).length - 4} more</div>
+                    <div className="text-xs text-gray-500 ps-1.5">+{handleDayEvents(day + 1).length - 4} more</div>
                 )}
             </div>
         )
     }
 
-    const addEvent = (e: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, day: number) => {
-        if (e) e.stopPropagation();
-        setDay(day);
-        setNewEventModal(true);
-    }
-
-    const viewEvent = (day: number) => {
-        setDay(day);
-        setViewEventModal(true);
-    }
-
-    const deleteEvent = (e: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, id: string | null) => {
-        if (!id) return;
-        if (e) e.stopPropagation();
-        setSeasonEvents((prevEvents) => {
-            const updatedEvents = prevEvents.filter((event) => event.id !== id);
-            localStorage.setItem("calendar_data", JSON.stringify(updatedEvents));
-            return updatedEvents;
-        });
+    const handleDayEventDisplaySmall = (day: number) => {
+        return (
+            <div className="flex flex-row flex-wrap gap-0.5 p-2">
+                {handleDayEvents(day + 1)
+                    .slice(0, 1)
+                    .map((events, index) => {
+                        if (events.type === "birthday") {
+                            const villagerIcon = villagerIcons(events.name);
+                            return (
+                                <div key={index} className="flex w-6 h-6 items-center justify-center">
+                                    <img 
+                                        src={villagerIcon ? villagerIcon.icon : ""} 
+                                        className="w-full h-full object-cover rounded-md"
+                                        alt={events.name}
+                                    />
+                                </div>
+                            );
+                        } else if (events.type.includes("festival")) {
+                            return (
+                                <div key={index} className="flex w-6 h-6 items-center justify-center">
+                                    <img 
+                                        src={festivalIcons(events.type)} 
+                                        className="w-full h-full object-cover rounded-md"
+                                        alt={events.type}
+                                    />
+                                </div>
+                            );
+                        } else {
+                            return (
+                                <div key={index} className="flex w-6 h-6 items-center justify-center">
+                                    <FontAwesomeIcon icon={faCalendarAlt} className="w-full h-full" />
+                                </div>
+                            );
+                        }
+                    })}
+                {handleDayEvents(day + 1).length > 1 && (
+                    <div className="text-gray-500 truncate text-[10px] tracking-[-0.5px]">
+                        +{handleDayEvents(day + 1).length - 1} more
+                    </div>
+                )}
+            </div>
+        );
     };
+
+    const hasPlayerMadeEvents = (day: number) => {
+        return handleDayEvents(day + 1).filter((playerEvent) => playerEvent.type !== "birthday" && !playerEvent.type.includes("festival")).length > 0;
+    }
+    
     
     return (
         <>
-            <div className="flex flex-row">
+            <div className="flex flex-col py-8 px-4 sm:px-8">
 
-                <div className="flex flex-col gap-3 pe-2 select-none">
-                    <div 
-                        className="bg-primary text-zinc-900 border-2 border-secondary rounded flex items-center justify-center font-semibold text-xl aspect-square cursor-pointer"
-                        onClick={() => addEvent(null, 1)}>
-                        <FontAwesomeIcon icon={faPlus}/>
-                    </div>
-
-                    <div>
-                        <div className="text-xs font-bold drop-shadow-[0_0_2px_black]">YEAR</div>
-                        <div className="bg-primary text-zinc-900 border-2 border-secondary w-14 rounded flex flex-col items-center justify-center font-semibold text-xl">
-                            <button className="w-full py-1 cursor-pointer" onClick={() => handleYearChange(true)}>
-                                <FontAwesomeIcon icon={faCaretUp}/>
-                            </button>
-                            {year+1}
-                            <button className="w-full py-1 cursor-pointer" onClick={() => handleYearChange(false)}>
-                                <FontAwesomeIcon icon={faCaretDown}/>
-                            </button>
+                {/* Header */}
+                <div className="flex flex-col flex-wrap gap-x-3 gap-y-1 select-none mb-1 sm:w-full sm:flex-row">
+                    <div className="flex flex-row h-10 w-full header-border-image text-zinc-900 font-semibold flex items-center justify-between sm:w-64 px-2">
+                        <button className="w-8 cursor-pointer shrink" onClick={() => handleYearChange(false)}>
+                            <FontAwesomeIcon icon={faCaretLeft}/>
+                        </button>
+                        <div className="flex-1 w-0 flex justify-center">
+                            <span className="truncate text-lg">Year {year+1}, {capitalizeString(season)}</span>
                         </div>
+                        <button className="w-8 cursor-pointer shrink" onClick={() => handleYearChange(true)}>
+                            <FontAwesomeIcon icon={faCaretRight}/>
+                        </button>
                     </div>
-
-                    <div>
-                        <div className="text-xs font-bold drop-shadow-[0_0_2px_black]">SEASON</div>
-                        <div className="flex flex-col gap-0.5">
+                    <div className="flex flex-row gap-2">
+                        <div className="h-10 flex flex-row shrink gap-0.5">
                             {seasonWithIcons.map((item) => {
                                 return (
-                                    <div 
+                                    <button
                                         key={item.name}
-                                        className="text-zinc-900 border-2 border-secondary w-14 rounded flex flex-col items-center justify-center"
+                                        title={capitalizeString(item.name)}
+                                        className="text-zinc-900 border-2 border-secondary rounded flex flex-col items-center justify-center"
                                         onClick={() => handleSeasonChange(item.name as Season)}
                                     >
                                         <img 
                                             src={item.icon}
                                             className={`cursor-pointer w-full h-full object-cover ${(season === item.name) ? "" : "opacity-40"}`}
                                         />
-                                    </div>
+                                    </button>
                                 )
                             })}
                         </div>
+                        <button 
+                            className="h-10 aspect-square bg-primary text-zinc-900 border-2 border-secondary rounded flex items-center justify-center font-semibold text-xl cursor-pointer"
+                            onClick={() => addEvent(null, 1)}>
+                            <FontAwesomeIcon icon={faPlus}/>
+                        </button>
                     </div>
                 </div>
 
+                {/* Calendar */}
                 <div className="select-none">
-                    <div className="grid grid-cols-[repeat(7,minmax(0,12rem))] border border-secondary">
-                        {
-                            Array.from(daysOfTheWeek, (day) => {
-                                return (
-                                    <div key={day} className="max-w-48 min-w-9 border border-secondary bg-primary-light font-bold text-zinc-900 text-center py-2">
+                    <div className="calendar-border-image">
+                        <div className="grid grid-cols-[repeat(7,minmax(0,11rem))]">
+                            {
+                                Array.from(daysOfTheWeek, (day) => (
+                                    <div 
+                                        key={day} 
+                                        className="max-w-44 border border-secondary bg-primary-light font-bold text-zinc-900 text-center py-2 text-xs sm:text-base"
+                                    >
                                         {day}
                                     </div>
-                                )
-                            })
-                        }
-                        {
-                            Array.from(Array(28), (_, i) => {
-                                return (
-                                    <div key={i} 
+                                ))
+                            }
+                            {
+                                Array.from(Array(28), (_, i) => (
+                                    <div 
+                                        key={i} 
                                         onClick={() => viewEvent(i+1)}
-                                        className="max-w-48 min-w-9 h-44 border border-secondary bg-primary/90 text-zinc-900 cursor-pointer hover:inset-shadow-sm hover:inset-shadow-black/20 group"
+                                        className="relative h-22 sm:max-w-44 sm:h-44 sm:aspect-auto border border-secondary bg-primary/90 text-zinc-900 cursor-pointer hover:inset-shadow-sm hover:inset-shadow-black/20 group"
                                     >
-                                        <div className="flex justify-between items-center">
-                                            <div className="w-8 h-8 border-b-2 border-e-2 border-secondary bg-primary-light flex items-center justify-center font-semibold cursor-default">
-                                                {i+1}
+                                        <div className="flex justify-between items-center relative">
+                                            {/* Day Number Container */}
+                                            <div 
+                                                onClick={(e) => e.stopPropagation()}
+                                                className="relative w-6 h-6 text-xs border-b-2 border-e-2 border-secondary bg-primary-light flex items-center justify-center font-semibold cursor-default sm:w-8 sm:h-8 sm:text-sm"
+                                            >
+                                                {/* Top-Right Ping Animation */}
+                                                {hasPlayerMadeEvents(i) &&
+                                                    <span className="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 flex size-3 z-50 pointer-events-none">
+                                                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+                                                        <span className="relative inline-flex size-3 rounded-full bg-red-500"></span>
+                                                    </span>
+                                                }
+
+                                                {i + 1}
                                             </div>
+
+                                            {/* Add Event Button */}
                                             <button 
                                                 title={`Add event for Year ${year+1}, ${capitalizeString(season)} ${i+1}`}
                                                 className="me-2 hidden group-hover:flex group-hover:transition-discrete items-center justify-center hover:bg-zinc-500/30 rounded cursor-pointer"
                                                 onClick={(e) => addEvent(e, i+1)}
                                             >
-                                                <FontAwesomeIcon icon={faPlus} className="text-sm p-1"/>
+                                                <FontAwesomeIcon icon={faPlus} className="text-xs p-0.75 sm:p-1 sm:text-sm"/>
                                             </button>
                                         </div>
-                                        {handleDayEventDisplay(i)}
+
+                                        <div className="hidden sm:block">
+                                            {handleDayEventDisplay(i)}
+                                        </div>
+                                        <div className="block sm:hidden">
+                                            {handleDayEventDisplaySmall(i)}
+                                        </div>
                                     </div>
-                                )
-                            })
-                        }
+                                ))
+                            }
+                        </div>
                     </div>
-                    <span className="text-xs font-semibold drop-shadow-[0_0_2px_black]">
+                    
+                    {/* Footer */}
+                    <div className="text-xs font-semibold drop-shadow-[0_0_2px_black] mt-1">
                         <a href="https://www.stardewvalley.net/" target="_blank" rel="noopener noreferrer" className="hover:underline">
                             Stardew Valley
                         </a> 
@@ -272,7 +347,7 @@ const Calendar = () => {
                             melzarjanchico
                         </a>
                         .
-                    </span>
+                    </div>
                 </div>
             </div>
 
