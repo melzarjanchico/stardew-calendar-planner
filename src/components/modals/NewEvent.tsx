@@ -41,7 +41,7 @@ const NewEventModal = ({ closeBtn, defaultYear, defaultSeason, defaultDay }: Pro
             const newEvent: CalendarData = {
                 id: crypto.randomUUID(),
                 day: calculateDay(year-1, indexOfSeason, day),
-                type: newNote,
+                type: "event-playerMade",
                 name: newTitle,
                 note: newNote
             };

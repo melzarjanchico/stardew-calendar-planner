@@ -183,7 +183,7 @@ const Calendar = () => {
 
     const handleDayEventDisplaySmall = (day: number) => {
         return (
-            <div className="flex flex-row flex-wrap gap-0.5 p-2">
+            <div className="flex flex-col gap-0.5 p-2">
                 {handleDayEvents(day + 1)
                     .slice(0, 1)
                     .map((events, index) => {
